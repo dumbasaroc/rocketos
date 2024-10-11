@@ -1,0 +1,37 @@
+.code16
+.section .text
+.global boot2start
+
+boot2start:
+    # We assume here that %ax has
+    # the disk lba
+    mov $second_bootloader_message, %si
+    call print
+    hlt
+
+halt:
+    jmp halt
+
+print:
+    push %si
+    push %ax
+    push %bx
+
+print_loop:
+    lodsb # loads a character from si and puts it in al
+    or %al, %al # end at zero
+    jz print_end
+
+    mov $0x0e, %ah # print character in al to screen
+    mov $0, %bh # page num
+    int $0x10 # video interrupt
+
+    jmp print_loop
+
+print_end:
+    pop %bx
+    pop %ax
+    pop %si
+    ret
+
+second_bootloader_message: .asciz "Welcome to the second bootloader!\r\n"

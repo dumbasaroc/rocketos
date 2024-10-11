@@ -1,0 +1,124 @@
+PRJ_NAME=ROCKETOS
+
+## COLORING
+REDFG=\033[31m
+GREENFG=\033[32m
+YELLOWFG=\033[33m
+NORMAL=\033[0m
+## END COLORING
+
+ASM=i686-elf-as
+LD=i686-elf-ld
+KERNEL_LINK_OPTIONS=-Tsrc/kernel/link.ld
+BOOT_LINK_OPTIONS=-Tsrc/boot/link.ld
+BOOT2_LINK_OPTIONS=-Tsrc/boot/boot2.ld
+
+CC=i686-elf-gcc
+CFLAGS16=-m16 -Wall -fno-builtin
+CINCLUDES_KERNEL=-Isrc/kernel/cstd
+
+BUILD_DIR=build
+SRC_DIR=src
+OBJ_DIR=obj
+IMG_FILENAME=main.img
+
+KERNEL_SOURCES=\
+	$(SRC_DIR)/kernel/main.s16 \
+	$(SRC_DIR)/kernel/cstd/stdio/print.s16 \
+	$(SRC_DIR)/kernel/cstd/stdio/getchar.s16 \
+	$(SRC_DIR)/kernel/main.c \
+	$(SRC_DIR)/kernel/cstd/stdio.c \
+	$(SRC_DIR)/kernel/gfx/rect.s16
+
+KERNEL_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
+			   $(patsubst %.s16,%.o,\
+			   $(patsubst %.c,%.obj,$(KERNEL_SOURCES))))
+
+
+BOOT_SOURCES=$(SRC_DIR)/boot/boot.s16
+
+BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
+			 $(patsubst %.s16,%.o,$(BOOT_SOURCES)))
+
+
+BOOT2_SOURCES=$(SRC_DIR)/boot/boot2.s16
+
+BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
+			  $(patsubst %.s16,%.o,$(BOOT2_SOURCES)))
+
+
+# Build Script
+.PHONY: build
+build: $(BUILD_DIR)/$(IMG_FILENAME)
+
+# Testing setup (instead of having a shellscript)
+.PHONY: test
+test: build
+	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
+	@echo -e "$(YELLOWFG) Starting QEMU emulation $(NORMAL)"
+	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
+	@qemu-system-i386 -fda $(BUILD_DIR)/$(IMG_FILENAME)
+
+
+# Debugging setup for GDB
+.PHONY: debug
+debug: build
+	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
+	@echo -e "$(YELLOWFG) Starting QEMU emulation $(NORMAL)"
+	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
+	@qemu-system-i386 -fda $(BUILD_DIR)/$(IMG_FILENAME) -s -S
+
+
+# Actual File Rules
+
+$(BUILD_DIR)/$(IMG_FILENAME): $(BUILD_DIR)/boot.bin $(BUILD_DIR)/kernel.bin $(BUILD_DIR)/boot2.bin
+	@echo -e "$(YELLOWFG)======================$(NORMAL)"
+	@echo -e "$(YELLOWFG)Creating bootable disk$(NORMAL)"
+	@echo -e "$(YELLOWFG)======================$(NORMAL)"
+	@dd if=/dev/zero of=$(BUILD_DIR)/main.img bs=512 count=2880
+	@mkfs.fat -F 12 -n "TESTOS" $(BUILD_DIR)/$(IMG_FILENAME)
+	@dd if=$(BUILD_DIR)/boot.bin of=$(BUILD_DIR)/$(IMG_FILENAME) conv=notrunc
+	@mcopy -i $(BUILD_DIR)/$(IMG_FILENAME) $(BUILD_DIR)/boot2.bin "::boot2.bin"
+	@mcopy -i $(BUILD_DIR)/$(IMG_FILENAME) $(BUILD_DIR)/kernel.bin "::kernel.bin"
+	@echo -e "$(GREENFG)COMPLETED!$(NORMAL)"
+
+
+$(BUILD_DIR)/kernel.bin: $(KERNEL_OBJECTS)
+	@echo -e "$(YELLOWFG)Linking kernel...$(NORMAL)"
+	@mkdir -p $(BUILD_DIR)
+	@$(LD) -o $(BUILD_DIR)/kernel.bin $(KERNEL_LINK_OPTIONS) $^
+	@echo -e "$(GREENFG)Linked kernel!$(NORMAL)"
+
+$(BUILD_DIR)/boot.bin: $(BOOT_OBJECTS)
+	@echo -e "$(YELLOWFG)Linking first-stage bootloader...$(NORMAL)"
+	@mkdir -p $(BUILD_DIR)
+	@$(LD) -o $(BUILD_DIR)/boot.bin $(BOOT_LINK_OPTIONS) $^
+	@echo -e "$(GREENFG)Linked bootloader!$(NORMAL)"
+
+$(BUILD_DIR)/boot2.bin: $(BOOT2_OBJECTS)
+	@echo -e "$(YELLOWFG)Linking second-stage bootloader...$(NORMAL)"
+	@mkdir -p $(BUILD_DIR)
+	@$(LD) -o $(BUILD_DIR)/boot2.bin $(BOOT2_LINK_OPTIONS) $^
+	@echo -e "$(GREENFG)Linked bootloader!$(NORMAL)"
+
+
+#########################
+# Individual File Rules #
+#########################
+
+$(OBJ_DIR)/%.obj: $(SRC_DIR)/%.c
+	@echo -e "Compiling $(YELLOWFG)$@$(NORMAL)..."
+	@mkdir -p $(dir $@)
+	@$(CC) -c $(CFLAGS16) $(CINCLUDES_KERNEL) $< -o $@ -Xassembler -al=$@.lst
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s16
+	@echo -e "Assembling $(YELLOWFG)$@$(NORMAL)..."
+	@mkdir -p $(dir $@)
+	@$(ASM) $< -al=$@.lst -o $@
+
+.PHONY: clean
+clean:
+	@echo -e "Cleaning $(PRJ_NAME)..."
+	@rm -rf $(BUILD_DIR)
+	@rm -rf $(OBJ_DIR)
+	@echo -e "$(GREENFG)Done!$(NORMAL)"

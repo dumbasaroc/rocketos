@@ -1,0 +1,92 @@
+.code16
+.global kernelenter
+.extern cstart
+
+kernelenter:
+    // hlt
+    // jmp halt
+
+    mov gfx_mode, %al
+    mov $0, %ah
+    int $0x10 # set video mode to 320x200 gfx mode
+
+    cli
+    mov %ds, %ax
+    mov %ax, %ss
+    mov $0, %sp
+    mov %sp, %bp
+    sti
+
+    call cstart_
+
+    cli
+
+    // pushw $0
+
+// pixel_loop:
+//     mov $0xa000, %ax
+//     mov %ax, %es # es has gfx ptr
+//     pop %di # coords
+//     mov %di, %ax
+//     xor %dx, %dx
+//     mov screen_width, %bx
+//     div %bx
+//     mov %dx, %ax
+//     xor %dx, %dx
+//     mov $22, %bx
+//     div %bx
+//     movb %al, %es:(%di)
+    
+//     inc %di
+//     cmp screen_pixels, %di
+//     push %di
+//     jne pixel_loop
+
+after_loop:
+
+    ##### DEBUG THING, JUST SO I SEE THE BARS ####
+    jmp halt
+
+    // mov $0, %ax
+    // mov %ax, %si
+    // mov $319, %ax
+    // mov %ax, %di
+    // xor %ax, %ax
+    // mov $0, %cx
+    // mov $199, %dx
+    // xor %bx, %bx
+    // mov $0xf, %bl
+    // call draw_rect
+
+    // mov $120, %ax
+    // mov %ax, %si
+    // mov $179, %ax
+    // mov %ax, %di
+    // xor %ax, %ax
+    // mov $20, %cx
+    // mov $179, %dx
+    // xor %bx, %bx
+    // mov $0x1, %bl
+    // call draw_rect
+
+    // mov $60, %ax
+    // mov %ax, %si
+    // mov $239, %ax
+    // mov %ax, %di
+    // xor %ax, %ax
+    // mov $20, %cx
+    // mov $79, %dx
+    // xor %bx, %bx
+    // mov $0x1, %bl
+    // call draw_rect
+
+    hlt
+
+halt:
+    jmp halt
+
+.section .data
+
+gfx_mode: .byte 0x13
+screen_pixels: .2byte 0xfa00
+screen_color: .2byte 0xffff
