@@ -1,3 +1,7 @@
+# This is code more or less taken from OliveStem's
+# YouTube series - it's here basically as a reference
+# as I learn and code my own things.
+
 .code16
 .global bootstart
 
