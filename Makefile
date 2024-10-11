@@ -10,7 +10,7 @@ NORMAL=\033[0m
 ASM=i686-elf-as
 LD=i686-elf-ld
 KERNEL_LINK_OPTIONS=-Tsrc/kernel/link.ld
-BOOT_LINK_OPTIONS=-Tsrc/boot/link.ld
+BOOT_LINK_OPTIONS=-Tsrc/boot/boot.ld
 BOOT2_LINK_OPTIONS=-Tsrc/boot/boot2.ld
 
 CC=i686-elf-gcc

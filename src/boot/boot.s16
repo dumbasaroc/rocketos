@@ -99,12 +99,24 @@ found_boot2:
     # and set up the place we want to put stuff
     mov %bx, %di # di now has the location in the buffer
     mov 26(%di), %ax # this is the cluster to get data from
+    mov %ax, boot2_cluster
+
+    # load something silly into buffer
+    mov n_reserved_sectors, %ax
+    mov $buffer, %bx
+    mov n_sectors_per_fat, %cl
+    mov drive_number, %dl
+
+    call read_disk
+
     # not included currently, but 28(%di) would give the 4 byte size
     # of the file
     mov $boot2_memory_segment, %bx
     mov %bx, %es
     mov $boot2_memory_offset, %bx
 
+load_second_stage:
+    mov boot2_cluster, %ax
     add $31, %ax # any offset is 31 sectors ahead of where i think it is
     // mov $1, %cl # number of sectors to read
     mov drive_number, %dl
@@ -113,6 +125,35 @@ found_boot2:
 
     add n_bytes_per_sector, %bx
 
+load_second_stage_find_next_cluster:
+    mov boot2_cluster, %ax
+    mov $3, %cx
+    mul %cx
+    mov $2, %cx
+    div %cx # boot2_cluster * 3 / 2 = next cluster loc
+
+    mov $buffer, %si
+    add %ax, %si
+    mov %ds:(%si), %ax
+
+    or %dx, %dx
+    jz load_second_stage_even
+
+load_second_stage_odd:
+    shr $4, %ax
+    jmp load_second_stage_load_next_cluster
+
+load_second_stage_even:
+    and $0x0fff, %ax
+
+load_second_stage_load_next_cluster:
+    cmp $0x0ff8, %ax
+    jae finish_second_stage
+
+    mov %ax, boot2_cluster
+    jmp load_second_stage
+
+finish_second_stage:
     # that should place things at the correct offset
     mov drive_number, %dl
     mov $boot2_memory_segment, %ax
@@ -220,7 +261,7 @@ print_end:
     ret
 
 
-secondstage_filename:   .ascii "BOOT2   BIN"
+secondstage_filename:   .ascii "KERNEL  BIN"
 no_find_boot2:          .asciz "Could not find boot2.bin.\r\n"
 found_boot2_msg:        .asciz "Found BOOT2.BIN!\r\n"
 
