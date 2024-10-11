@@ -11,7 +11,7 @@ ASM=i686-elf-as
 LD=i686-elf-ld
 KERNEL_LINK_OPTIONS=-Tsrc/kernel/link.ld
 BOOT_LINK_OPTIONS=-Tsrc/boot/boot.ld
-BOOT2_LINK_OPTIONS=-Tsrc/boot/boot2.ld
+BOOT2_LINK_OPTIONS=-Tsrc/boot2/boot2.ld
 
 CC=i686-elf-gcc
 CFLAGS16=-m16 -Wall -fno-builtin
@@ -42,7 +42,7 @@ BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			 $(patsubst %.s16,%.o,$(BOOT_SOURCES)))
 
 
-BOOT2_SOURCES=$(SRC_DIR)/boot/boot2.s16
+BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s16
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			  $(patsubst %.s16,%.o,$(BOOT2_SOURCES)))

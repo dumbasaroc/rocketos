@@ -214,28 +214,60 @@ lba_to_chs:
     push %ax
     push %dx
 
-    xor %cx, %cx
     xor %dx, %dx
+    divw n_sectors_per_track # LBA % sectors_per_track + 1 = sector
+    # ax has division, dx has modulus
+    inc %dx # sector!
+    mov %dx, %cx
 
-    divw n_sectors_per_track # ax has division, dx has modulo
-
-    # dx has sector number - 1, inc and put into
-    # cx
-    inc %dx
-    mov %dl, %cl
+    # head: ax % num heads
+    # cylinder: ax / num_heads
     xor %dx, %dx
+    divw n_heads
 
-    divw n_heads # ax has cylinder, dl has head
-    mov %dl, %dh # but dh should have it
-
-    shl $6, %ax
-    and $0xffe0, %ax
-    add %ah, %ch
+    mov %dl, %dh # head
+    mov %al, %ch
+    shl $6, %ah
+    or %ah, %cl # cylinder
 
     pop %ax
     mov %al, %dl
     pop %ax
     ret
+
+
+// # INPUT:
+// #   AX: LBA index
+// # OUTPUT
+// #   CX[bits 0-5]: sector number
+// #   CX[bits 6-15]: cylinder
+// #   DH: head
+// lba_to_chs:
+//     push %ax
+//     push %dx
+
+//     xor %cx, %cx
+//     xor %dx, %dx
+
+//     divw n_sectors_per_track # ax has division, dx has modulo
+
+//     # dx has sector number - 1, inc and put into
+//     # cx
+//     inc %dx
+//     mov %dl, %cl
+//     xor %dx, %dx
+
+//     divw n_heads # ax has cylinder, dl has head
+//     mov %dl, %dh # but dh should have it
+
+//     shl $6, %ax
+//     and $0xffe0, %ax
+//     add %ah, %ch
+
+//     pop %ax
+//     mov %al, %dl
+//     pop %ax
+//     ret
 
 
 print:
