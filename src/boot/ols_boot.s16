@@ -45,6 +45,7 @@ main:
     xor %bh, %bh
     mul %bx # ax is now the number of sectors of fat
     add bdb_reserved_sectors, %ax # LBA of root directory
+    push %ax
 
     mov bdb_dir_entries_count, %ax
     shl $5, %ax # mul ax by 32
@@ -58,7 +59,6 @@ main:
 find_rootdir:
     mov %al, %cl # num sectors to read
     pop %ax # lba
-    push %ax
     mov ebr_drive_number, %dl
     mov $buffer, %bx
     call disk_read
@@ -256,7 +256,7 @@ disk_read_done:
 disk_read_fail_msg:     .asciz "FAILED TO READ DISK\n"
 
 # KERNEL FILE PROPERTIES
-boot2_filename:         .ascii "BOOT2   BIN"
+boot2_filename:         .ascii "KERNEL  BIN"
 msg_boot2_not_found:    .asciz "BOOT2.BIN NOT FOUND!"
 boot2_cluster:          .2byte 0
 

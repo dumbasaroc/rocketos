@@ -2,7 +2,7 @@ OUTPUT_FORMAT("binary")
 ENTRY(kernelenter)
 MEMORY
 {
-    app : ORIGIN = 0x00000000, LENGTH = 0x400
+    app : ORIGIN = 0x00000000, LENGTH = 0x1000
 }
 SECTIONS
 {

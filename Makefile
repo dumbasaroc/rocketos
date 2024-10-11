@@ -28,7 +28,8 @@ KERNEL_SOURCES=\
 	$(SRC_DIR)/kernel/cstd/stdio/getchar.s16 \
 	$(SRC_DIR)/kernel/main.c \
 	$(SRC_DIR)/kernel/cstd/stdio.c \
-	$(SRC_DIR)/kernel/gfx/rect.s16
+	$(SRC_DIR)/kernel/gfx/rect.s16 \
+	$(SRC_DIR)/kernel/gfx/letters.c
 
 KERNEL_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			   $(patsubst %.s16,%.o,\
