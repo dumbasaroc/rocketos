@@ -70,14 +70,77 @@ void draw_character(char c, uint16_t x, uint16_t y, uint8_t color)
     case 'O':
         character = O_chr;
         break;
+    case 'P':
+        character = P_chr;
+        break;
+    case 'Q':
+        character = Q_chr;
+        break;
     case 'R':
         character = R_chr;
+        break;
+    case 'S':
+        character = S_chr;
+        break;
+    case 'T':
+        character = T_chr;
+        break;
+    case 'U':
+        character = U_chr;
+        break;
+    case 'V':
+        character = V_chr;
         break;
     case 'W':
         character = W_chr;
         break;
+    case 'X':
+        character = X_chr;
+        break;
+    case 'Y':
+        character = Y_chr;
+        break;
+    case 'Z':
+        character = Z_chr;
+        break;
+    case '.':
+        character = PERIOD_chr;
+        break;
+    case '!':
+        character = EXCLAM_chr;
+        break;
+    case '?':
+        character = QUESTN_chr;
+        break;
     case '0':
         character = ZERO_chr;
+        break;
+    case '1':
+        character = ONE_chr;
+        break;
+    case '2':
+        character = TWO_chr;
+        break;
+    case '3':
+        character = THREE_chr;
+        break;
+    case '4':
+        character = FOUR_chr;
+        break;
+    case '5':
+        character = FIVE_chr;
+        break;
+    case '6':
+        character = SIX_chr;
+        break;
+    case '7':
+        character = SEVEN_chr;
+        break;
+    case '8':
+        character = EIGHT_chr;
+        break;
+    case '9':
+        character = NINE_chr;
         break;
     default:
         break;
@@ -97,8 +160,8 @@ void draw_character(char c, uint16_t x, uint16_t y, uint8_t color)
 void cstart_() {
 
     /// @todo doesn't work under Roc bootloader
-    const char* test_string1 = "HELLO W0RLD";
-    const char* test_string2 = "ABCDEFGHIJKLMNORW0";
+    const char* test_string1 = "HELLO ALLEECORD!!!";
+    const char* test_string2 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.!?0123456789";
 
     uint16_t x_ctr = START;
     char* sptr = test_string1;

@@ -9,6 +9,6 @@ BUGS
 TODO
 ====
 
-- [ ] Finish spriting letters
+- [x] Finish spriting letters
 - [ ] Compact letter sprite data (move each row into a single byte)
 - [ ] Exit 16 bit mode
