@@ -5,3 +5,10 @@ BUGS
 - ~~Kernel doesn't fully work on my bootloader, but does for OLS' bootloader~~
   - ~~Corrupted textures on the letters~~
 - Doesn't support any disks besides floppy disk
+
+TODO
+====
+
+- [ ] Finish spriting letters
+- [ ] Compact letter sprite data (move each row into a single byte)
+- [ ] Exit 16 bit mode
