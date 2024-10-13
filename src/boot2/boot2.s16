@@ -5,12 +5,82 @@
 boot2start:
     # We assume here that %ax has
     # the disk lba
-    mov $second_bootloader_message, %si
+    // mov $second_bootloader_message, %si
+    // call print
+
+    mov $memory_text, %si
     call print
+
+    // checking memory via bios
+    clc
+    int $0x12
+    jc halt
+    call print_hex
+
+    mov $memory_text_suffix, %si
+    call print
+
     hlt
 
 halt:
     jmp halt
+
+# INPUTS
+#   - ax: A 16 bit hex number to convert
+# OUTPUTS
+#   None (sets bits in hex_buffer)
+conv_hex:
+    push %ax
+    push %bx
+    push %cx
+    push %dx
+
+    pushw $0
+    mov $0x1000, %bx
+
+conv_hex_loop:
+    // push %si
+    // mov $loopthing, %si
+    // call print
+    // pop %si
+
+    pop %cx
+    push %cx
+    cmp $4, %cx
+    je conv_hex_finish
+
+    div %bx # ax has numeral, dx has remainder
+    cmp $0xa, %ax
+    jl conv_hex_numeral
+
+conv_hex_letter:
+    add $0x37, %ax
+    jmp conv_hex_loopfinish
+
+conv_hex_numeral:
+    add $0x30, %ax
+
+conv_hex_loopfinish:
+    pop %cx
+    push %bx
+    mov $hex_buffer, %bx
+    add %cx, %bx
+    mov %ax, (%bx)
+    pop %bx
+    shr $4, %bx
+    inc %cx
+    push %cx
+    mov %dx, %ax
+    xor %dx, %dx
+    jmp conv_hex_loop
+
+conv_hex_finish:
+    pop %cx
+    pop %dx
+    pop %cx
+    pop %bx
+    pop %ax
+    ret
 
 print:
     push %si
@@ -34,4 +104,34 @@ print_end:
     pop %si
     ret
 
-second_bootloader_message: .asciz "Welcome to the second bootloader!\r\n"
+print_hex:
+    push %ax
+    push %si
+
+    mov $zero_x, %si
+    call print
+
+    call conv_hex
+    mov $hex_buffer, %si
+    call print
+
+    pop %si
+    pop %ax
+    ret
+
+print_nl:
+    push %si
+
+    mov $newline, %si
+    call print
+
+    pop %si
+    ret
+
+memory_text:                .asciz "Total continuous memory: "
+memory_text_suffix:         .asciz " KB\r\n"
+
+# Required statements for printing
+zero_x:                     .asciz "0x"
+hex_buffer:                 .byte 0, 0, 0, 0, 0
+newline:                    .asciz "\r\n"

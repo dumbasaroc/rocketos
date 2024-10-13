@@ -12,3 +12,9 @@ TODO
 - [x] Finish spriting letters
 - [ ] Compact letter sprite data (move each row into a single byte)
 - [ ] Exit 16 bit mode
+  - [x] Get memory map (low-data)
+  - [ ] Get memory map (high-data)
+  - [ ] Write a global descriptor table for protected mode
+  - [ ] Write an interrupt descriptor table for protected mode
+  - [ ] Disable interrupts
+  - [ ] Enable A20 line

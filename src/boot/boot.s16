@@ -293,7 +293,7 @@ print_end:
     ret
 
 
-secondstage_filename:   .ascii "KERNEL  BIN"
+secondstage_filename:   .ascii "BOOT2   BIN"
 no_find_boot2:          .asciz "Could not find boot2.bin.\r\n"
 found_boot2_msg:        .asciz "Found BOOT2.BIN!\r\n"
 
