@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "build",
+			"name": "Release Files"
+		},
+		{
+			"path": "obj",
+			"name": "Object Files"
+		},
+		{
+			"path": "src/boot",
+			"name": "Bootloader"
+		},
+		{
+			"path": "src/boot2",
+			"name": "BOOT2"
+		},
+		{
+			"path": "src/kernel",
+			"name": "OS Kernel"
+		},
+		{
+			"path": ".",
+			"name": "Root Directory",
+		}
+	],
+	"settings": {}
+}
