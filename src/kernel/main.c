@@ -11,10 +11,11 @@
 
 #define START 1
 
-#define SCREENWIDTH 318
-#define SCREENHEIGHT 198
+#define SCREENWIDTH 319
+#define SCREENHEIGHT 199
 #define PIXEL_WIDTH 2
 #define PIXEL_HEIGHT 2
+#define BUFSIZE 32
 
 #define LETTER_WIDTH 4
 #define LETTER_HEIGHT 6
@@ -157,104 +158,40 @@ void draw_character(char c, uint16_t x, uint16_t y, uint8_t color)
     }
 }
 
+char buffer[BUFSIZE] = {};
 void cstart_() {
 
-    /// @todo doesn't work under Roc bootloader
-    const char* test_string1 = "HELLO ALLEECORD!!!";
-    const char* test_string2 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.!?0123456789";
-
-    uint16_t x_ctr = START;
-    char* sptr = test_string1;
-    for (; *sptr; sptr++)
+    uint8_t len = 0;
+    while (1)
     {
-        draw_character(*sptr, x_ctr, START, WHITE);
-        x_ctr += LETTER_WIDTH + LETTER_SPACE;
+        // Draw background
+        RocketOS_DrawRect(0, 0, SCREENHEIGHT, SCREENWIDTH, BLACK);
+        RocketOS_DrawRect(0, 0, 5, 5, MAGENTA);
+
+        // render buffer
+        char* buf_ptr = buffer;
+        uint16_t x_pos = START;
+        for (; *buf_ptr; buf_ptr++)
+        {
+            char c = *buf_ptr;
+            if (c >= 'a' && c <= 'z') {
+                c -= ('a' - 'A');
+            }
+            draw_character(c, x_pos, START + 20, WHITE);
+            x_pos += LETTER_WIDTH + LETTER_SPACE;
+        }
+
+        char c = getc();
+        // if backspace
+        if (c == 0x8 && len > 0)
+        {
+            buffer[len-1] = '\0';
+            len--;
+        }
+        else if (len < BUFSIZE) {
+            buffer[len] = c;
+            len++;
+        }
     }
-
-    x_ctr = START;
-    uint8_t clr = 0x1;
-    sptr = test_string2;
-    for (; *sptr; sptr++)
-    {
-        draw_character(*sptr, x_ctr, START + 40, clr);
-        clr += 1;
-        if (clr == 0x10) clr = 0x1;
-        x_ctr += LETTER_WIDTH + LETTER_SPACE;
-    }
-    // uint8_t* characters_2[] = { R_chr, O_chr, C_chr };
-    // num_chars = 3;
-
-    // x_ctr = START;
-    // for (int n = 0; n < num_chars; n++)
-    // {
-    //     for (int i = 0; i < LETTER_WIDTH; i++)
-    //     {
-    //         for (int j = 0; j < LETTER_HEIGHT; j++)
-    //         {
-    //             RocketOS_DrawRect(x_ctr + i, 40 + j, 1, 1, WHITE*(characters_2[n][LETTER_WIDTH*j+i]));
-    //         }
-    //     }
-    //     x_ctr += LETTER_WIDTH + LETTER_SPACE;
-    // }
-
-    // uint16_t ctr = START;
-    // int8_t dir = 1;
-
-    // uint16_t i = START;
-    // for (; i < SCREENWIDTH; i++)
-    // {
-    //     RocketOS_DrawRect(i, ctr, PIXEL_WIDTH, PIXEL_HEIGHT, WHITE);
-    //     ctr += dir;
-    //     if (ctr == SCREENHEIGHT - 1)
-    //     {
-    //         dir = -1;
-    //     }
-    //     if (ctr == START)
-    //     {
-    //         dir = 1;
-    //     }
-    // }
-    // i = SCREENWIDTH - 1;
-    // for (; i > START; i--)
-    // {
-    //     RocketOS_DrawRect(i, ctr, PIXEL_WIDTH, PIXEL_HEIGHT, BLUE);
-    //     ctr += dir;
-    //     if (ctr == SCREENHEIGHT - 1)
-    //     {
-    //         dir = -1;
-    //     }
-    //     if (ctr == START)
-    //     {
-    //         dir = 1;
-    //     }
-    // }
-    // i = START;
-    // for (; i < SCREENWIDTH; i++)
-    // {
-    //     RocketOS_DrawRect(i, ctr, PIXEL_WIDTH, PIXEL_HEIGHT, YELLOW);
-    //     ctr += dir;
-    //     if (ctr == SCREENHEIGHT - 1)
-    //     {
-    //         dir = -1;
-    //     }
-    //     if (ctr == START)
-    //     {
-    //         dir = 1;
-    //     }
-    // }
-    // i = SCREENWIDTH - 1;
-    // for (; i > START; i--)
-    // {
-    //     RocketOS_DrawRect(i, ctr, PIXEL_WIDTH, PIXEL_HEIGHT, MAGENTA);
-    //     ctr += dir;
-    //     if (ctr == SCREENHEIGHT - 1)
-    //     {
-    //         dir = -1;
-    //     }
-    //     if (ctr == START)
-    //     {
-    //         dir = 1;
-    //     }
-    // }
     
 }
