@@ -1,29 +1,58 @@
 .code16
 .section .text
 .global boot2start
+CODE_SEGMENT = code_descriptor - GDT_Start
+DATA_SEGMENT = data_descriptor - GDT_Start
 
 boot2start:
-    # We assume here that %ax has
-    # the disk lba
-    // mov $second_bootloader_message, %si
-    // call print
+    mov $GDT_Start, %eax
+    // add $0x10000, %eax
+    // mov %eax, GDT_Descriptor_start
 
-    mov $memory_text, %si
-    call print
-
-    // checking memory via bios
-    clc
-    int $0x12
-    jc halt
     call print_hex
 
-    mov $memory_text_suffix, %si
-    call print
+    shr $16, %eax
+    call print_hex
+
+    cli
+    lgdt GDT_Descriptor
+    mov %cr0, %eax
+    or $1, %eax
+    mov %eax, %cr0
+
+    jmp $CODE_SEGMENT, $test_protected_mode
+
 
     hlt
 
 halt:
     jmp halt
+
+GDT_Start:
+    null_descriptor:
+        .quad 0x0
+    
+    code_descriptor:
+        .word 0xffff
+        .word 0
+        .byte 0
+        .byte 0b10011010
+        .byte 0b11001111
+        .byte 0
+    
+    data_descriptor:
+        .word 0xffff
+        .word 0
+        .byte 0
+        .byte 0b10010010
+        .byte 0b11001111
+        .byte 0
+GDT_End:
+
+GDT_Descriptor:
+    .word GDT_End - GDT_Start
+GDT_Descriptor_start:
+    .long GDT_Start
 
 # INPUTS
 #   - ax: A 16 bit hex number to convert
@@ -119,19 +148,34 @@ print_hex:
     pop %ax
     ret
 
-print_nl:
-    push %si
+// print_nl:
+//     push %si
 
-    mov $newline, %si
-    call print
+//     mov $newline, %si
+//     call print
 
-    pop %si
-    ret
+//     pop %si
+//     ret
 
-memory_text:                .asciz "Total continuous memory: "
-memory_text_suffix:         .asciz " KB\r\n"
+// memory_text:                .asciz "Total continuous memory: "
+// memory_text_suffix:         .asciz " KB\r\n"
 
-# Required statements for printing
+// # Required statements for printing
 zero_x:                     .asciz "0x"
 hex_buffer:                 .byte 0, 0, 0, 0, 0
-newline:                    .asciz "\r\n"
+// newline:                    .asciz "\r\n"
+
+
+.code32
+
+test_protected_mode:
+    movw $0x0f41, 0xb8000
+    // mov $0x41, %al
+    // mov $0x0f, %ah
+    // mov %ax, 0xb8000
+    hlt
+
+halt32:
+    jmp halt32
+
+.equ test_data, 0x410f

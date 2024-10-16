@@ -43,9 +43,13 @@ BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 
 
 BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s16
+#   $(SRC_DIR)/boot2/gdt_setup.c
+#   $(SRC_DIR)/boot2/gdt_struct.c
+#   $(SRC_DIR)/boot2/idt_struct.c
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
-			  $(patsubst %.s16,%.o,$(BOOT2_SOURCES)))
+			  $(patsubst %.s16,%.o,\
+			  $(patsubst %.c,%.obj,$(BOOT2_SOURCES))))
 
 
 # Build Script
