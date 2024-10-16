@@ -25,5 +25,30 @@
 			"name": "Root Directory",
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"*.s16": "gas",
+			"*.c16": "c"
+		},
+		"material-icon-theme.files.customClones": [
+			{
+				"name": "c16",
+				"color": "#940aaf",
+				"base": "c",
+				"fileExtensions": ["c16"]
+			},
+			{
+				"name": "asm16",
+				"color": "#0088ff",
+				"base": "assembly",
+				"fileExtensions": ["s16"]
+			},
+			{
+				"name": "linkerfiles",
+				"color": "#0088ff",
+				"base": "url",
+				"fileExtensions": ["ld"]
+			}
+		]
+	}
 }

@@ -14,7 +14,8 @@ BOOT_LINK_OPTIONS=-Tsrc/boot/boot.ld
 BOOT2_LINK_OPTIONS=-Tsrc/boot2/boot2.ld
 
 CC=i686-elf-gcc
-CFLAGS16=-m16 -Wall -fno-builtin
+CFLAGS16=-x c -m16 -Wall -fno-builtin
+CFLAGS32=-m32 -Wall -fno-builtin
 CINCLUDES_KERNEL=-Isrc/kernel/cstd
 
 BUILD_DIR=build
@@ -23,33 +24,33 @@ OBJ_DIR=obj
 IMG_FILENAME=main.img
 
 KERNEL_SOURCES=\
-	$(SRC_DIR)/kernel/main.s16 \
-	$(SRC_DIR)/kernel/cstd/stdio/print.s16 \
-	$(SRC_DIR)/kernel/cstd/stdio/getchar.s16 \
-	$(SRC_DIR)/kernel/main.c \
-	$(SRC_DIR)/kernel/cstd/stdio.c \
-	$(SRC_DIR)/kernel/gfx/rect.s16 \
-	$(SRC_DIR)/kernel/gfx/letters.c
+	$(SRC_DIR)/kernel/main.s \
+	$(SRC_DIR)/kernel/cstd/stdio/print.s \
+	$(SRC_DIR)/kernel/cstd/stdio/getchar.s \
+	$(SRC_DIR)/kernel/main.c16 \
+	$(SRC_DIR)/kernel/cstd/stdio.c16 \
+	$(SRC_DIR)/kernel/gfx/rect.s \
+	$(SRC_DIR)/kernel/gfx/letters.c16
 
 KERNEL_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
-			   $(patsubst %.s16,%.o,\
-			   $(patsubst %.c,%.obj,$(KERNEL_SOURCES))))
+			   $(patsubst %.s,%.o,\
+			   $(patsubst %.c16,%.obj,$(KERNEL_SOURCES))))
 
 
-BOOT_SOURCES=$(SRC_DIR)/boot/boot.s16
+BOOT_SOURCES=$(SRC_DIR)/boot/boot.s
 
 BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
-			 $(patsubst %.s16,%.o,$(BOOT_SOURCES)))
+			 $(patsubst %.s,%.o,$(BOOT_SOURCES)))
 
 
-BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s16
-#   $(SRC_DIR)/boot2/gdt_setup.c
-#   $(SRC_DIR)/boot2/gdt_struct.c
-#   $(SRC_DIR)/boot2/idt_struct.c
+BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s
+#   $(SRC_DIR)/boot2/gdt_setup.c16
+#   $(SRC_DIR)/boot2/gdt_struct.c16
+#   $(SRC_DIR)/boot2/idt_struct.c16
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
-			  $(patsubst %.s16,%.o,\
-			  $(patsubst %.c,%.obj,$(BOOT2_SOURCES))))
+			  $(patsubst %.s,%.o,\
+			  $(patsubst %.c16,%.obj,$(BOOT2_SOURCES))))
 
 
 # Build Script
@@ -111,12 +112,12 @@ $(BUILD_DIR)/boot2.bin: $(BOOT2_OBJECTS)
 # Individual File Rules #
 #########################
 
-$(OBJ_DIR)/%.obj: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.obj: $(SRC_DIR)/%.c16
 	@echo -e "Compiling $(YELLOWFG)$@$(NORMAL)..."
 	@mkdir -p $(dir $@)
 	@$(CC) -c $(CFLAGS16) $(CINCLUDES_KERNEL) $< -o $@ -Xassembler -al=$@.lst
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s16
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
 	@echo -e "Assembling $(YELLOWFG)$@$(NORMAL)..."
 	@mkdir -p $(dir $@)
 	@$(ASM) $< -al=$@.lst -o $@
