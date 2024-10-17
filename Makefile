@@ -43,10 +43,10 @@ BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			 $(patsubst %.s,%.o,$(BOOT_SOURCES)))
 
 
-BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s
-#   $(SRC_DIR)/boot2/gdt_setup.c16
-#   $(SRC_DIR)/boot2/gdt_struct.c16
-#   $(SRC_DIR)/boot2/idt_struct.c16
+BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s \
+			$(SRC_DIR)/boot2/gdt_setup.c16 \
+			$(SRC_DIR)/boot2/gdt_struct.c16 \
+			$(SRC_DIR)/boot2/idt_struct.c16
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			  $(patsubst %.s,%.o,\

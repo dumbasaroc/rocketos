@@ -298,7 +298,7 @@ no_find_boot2:          .asciz "Could not find boot2.bin.\r\n"
 found_boot2_msg:        .asciz "Found BOOT2.BIN!\r\n"
 
 .equ boot2_memory_segment, 0x0
-.equ boot2_memory_offset, 0xa411
+.equ boot2_memory_offset, 0x8800
 boot2_cluster:          .2byte 0
 
 .zero 510-(.-bootstart)

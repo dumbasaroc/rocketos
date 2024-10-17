@@ -4,9 +4,9 @@
 typedef uint8_t* GlobalDescriptorTable;
 
 typedef struct {
-    uint32_t gdt_offset;
     uint16_t size;
-} GDT_Descriptor;
+    uint32_t gdt_offset;
+} __attribute__((__packed__)) GDT_Descriptor;
 
 typedef uint16_t SegmentSelector;
 

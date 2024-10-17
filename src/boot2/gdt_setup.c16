@@ -3,13 +3,21 @@
 
 #define GDT_SIZE 24
 
-#define CODE_SEGMENT 0x5000
-#define CODE_LIMIT   0xFFF
-#define DATA_SEGMENT 0x6000
-#define DATA_LIMIT   0xFFF
+#define CODE_SEGMENT 0x0
+#define CODE_LIMIT   0xFFFFF
+#define DATA_SEGMENT 0x0
+#define DATA_LIMIT   0xFFFFF
+
+#define IDT_SIZE 1
 
 uint8_t global_descriptor_table[GDT_SIZE];
 GDT_Descriptor gdt_descriptor;
+
+uint8_t interrupt_descriptor_table[IDT_SIZE];
+IDT_Descriptor idt_descriptor;
+
+uint16_t CODE_OFFSET = 0;
+uint16_t DATA_OFFSET = 0;
 
 void idt_setup() {
     // Set up IDT entries
@@ -29,14 +37,16 @@ void gdt_setup() {
     seg.limit = CODE_LIMIT;
 
     encode_gdt_entry(global_descriptor_table + 8, &seg);
+    CODE_OFFSET = 0x8;
 
     // Define a data segment (for now, kernel level access)
     seg.base_address = DATA_SEGMENT;
     seg.access_byte = 0b10010010;
-    seg.flags = 0b0100;
+    seg.flags = 0b1100;
     seg.limit = DATA_LIMIT;
 
     encode_gdt_entry(global_descriptor_table + 16, &seg);
+    DATA_OFFSET = 0x10;
     
     // // Define a task state segment (whatever that means)
     // seg.base_address = 0x0;
@@ -50,9 +60,8 @@ void gdt_setup() {
 
     // ... after all that, put data in the GDT descriptor, then
     // load the GDT into the computer
-    gdt_descriptor.gdt_offset = &global_descriptor_table;
+    gdt_descriptor.gdt_offset = (uint32_t)&global_descriptor_table;
+    gdt_descriptor.gdt_offset = gdt_descriptor.gdt_offset;
     // This describes the size of the GDT table in bytes subtracted by 1
     gdt_descriptor.size = GDT_SIZE - 1;
-
-    // [LOAD GDT COMMAND HERE]
 }
