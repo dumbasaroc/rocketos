@@ -166,7 +166,6 @@ void cstart_() {
     {
         // Draw background
         RocketOS_DrawRect(0, 0, SCREENHEIGHT, SCREENWIDTH, BLACK);
-        RocketOS_DrawRect(0, 0, 5, 5, MAGENTA);
 
         // render buffer
         char* buf_ptr = buffer;
