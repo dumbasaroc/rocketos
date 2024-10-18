@@ -1,6 +1,24 @@
 #pragma once
 #include "stdint.h"
 
+#define GDT_ACCESSBIT_PRESENT       0b10000000
+#define GDT_ACCESSBIT_RING0         0b00000000
+#define GDT_ACCESSBIT_RING3         0b01100000
+#define GDT_ACCESSBIT_TASKSEG       0b10000000
+#define GDT_ACCESSBIT_CODEDATA      0b00010000
+#define GDT_ACCESSBIT_DATA          0b00000000
+#define GDT_ACCESSBIT_CODE          0b00001000
+#define GDT_ACCESSBIT_GROWUP        0b00000000
+#define GDT_ACCESSBIT_GROWDOWN      0b00000100
+#define GDT_ACCESSBIT_CONFORM       0b00000000
+#define GDT_ACCESSBIT_NONCONFORM    0b00000100
+#define GDT_ACCESSBIT_CODEREADABLE  0b00000010
+#define GDT_ACCESSBIT_DATAWRITABLE  0b00000010
+
+#define GDT_FLAGS_PAGE_GRANULARITY  0b1000
+#define GDT_FLAGS_32BIT             0b0100
+#define GDT_FLAGS_64BIT             0b0010
+
 typedef uint8_t* GlobalDescriptorTable;
 
 typedef struct {
@@ -34,19 +52,6 @@ typedef struct {
     uint8_t access_byte;
     uint8_t flags;
 } GDT_SegmentDescriptor;
-
-/**
- * Returns a segment selector (a 16 bit number)
- * with bits set correctly for the given index, table,
- * and permission level.
- * 
- * @param index A segment index between 0x0 and 0xFFFFFFFFFFFFF (i think?)
- * @param descriptor_table 0 if adding to the GDT, 1 if adding to the current
- * LDT
- * @param privilege Which ring (either 0 or 3, in our case) to place
- * the entry in.
- */
-uint16_t generate_segment_selector(uint16_t index, uint8_t descriptor_table, uint8_t privilege);
 
 
 void encode_gdt_entry(uint8_t* target, GDT_SegmentDescriptor* segment);

@@ -28,7 +28,8 @@
 	"settings": {
 		"files.associations": {
 			"*.s16": "gas",
-			"*.c16": "c"
+			"*.c16": "c",
+			"idt_struct.h": "c"
 		},
 		"material-icon-theme.files.customClones": [
 			{

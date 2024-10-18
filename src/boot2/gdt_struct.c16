@@ -1,10 +1,5 @@
 #include "gdt_struct.h"
 
-uint16_t generate_segment_selector(uint16_t index, uint8_t descriptor_table, uint8_t privilege)
-{
-    return 0x0;
-}
-
 
 void encode_gdt_entry(uint8_t* target, GDT_SegmentDescriptor* segment)
 {

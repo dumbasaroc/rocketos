@@ -15,8 +15,10 @@ BOOT2_LINK_OPTIONS=-Tsrc/boot2/boot2.ld
 
 CC=i686-elf-gcc
 CFLAGS16=-x c -m16 -Wall -fno-builtin
+#-mpreferred-stack-boundary=0
 CFLAGS32=-m32 -Wall -fno-builtin
 CINCLUDES_KERNEL=-Isrc/kernel/cstd
+CINCLUDES_BOOT2=-Isrc/boot2
 
 BUILD_DIR=build
 SRC_DIR=src
@@ -45,12 +47,15 @@ BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 
 BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s \
 			$(SRC_DIR)/boot2/gdt_setup.c16 \
+			$(SRC_DIR)/boot2/idt_setup.c16 \
 			$(SRC_DIR)/boot2/gdt_struct.c16 \
-			$(SRC_DIR)/boot2/idt_struct.c16
+			$(SRC_DIR)/boot2/idt_struct.c16 \
+			$(SRC_DIR)/boot2/interrupts/catchall_interrupt.s
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			  $(patsubst %.s,%.o,\
-			  $(patsubst %.c16,%.obj,$(BOOT2_SOURCES))))
+			  $(patsubst %.c16,%.obj, \
+			  $(patsubst %.c,%.obj,$(BOOT2_SOURCES)))))
 
 
 # Build Script
@@ -63,7 +68,7 @@ test: build
 	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
 	@echo -e "$(YELLOWFG) Starting QEMU emulation $(NORMAL)"
 	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
-	@qemu-system-i386 -fda $(BUILD_DIR)/$(IMG_FILENAME)
+	@qemu-system-i386 -fda $(BUILD_DIR)/$(IMG_FILENAME) -monitor stdio
 
 
 # Debugging setup for GDB
@@ -112,7 +117,17 @@ $(BUILD_DIR)/boot2.bin: $(BOOT2_OBJECTS)
 # Individual File Rules #
 #########################
 
-$(OBJ_DIR)/%.obj: $(SRC_DIR)/%.c16
+$(OBJ_DIR)/boot2/%.obj: $(SRC_DIR)/boot2/%.c16
+	@echo -e "Compiling GCC16 $(YELLOWFG)$@$(NORMAL)..."
+	@mkdir -p $(dir $@)
+	@$(CC) -c $(CFLAGS16) $(CINCLUDES_BOOT2) $< -o $@ -Xassembler -al=$@.lst
+
+$(OBJ_DIR)/boot2/%.obj: $(SRC_DIR)/boot2/%.c
+	@echo -e "Compiling GCC32 $(YELLOWFG)$@$(NORMAL)..."
+	@mkdir -p $(dir $@)
+	@$(CC) -c $(CFLAGS32) $(CINCLUDES_BOOT2) $< -o $@ -Xassembler -al=$@.lst
+
+$(OBJ_DIR)/kernel/%.obj: $(SRC_DIR)/kernel/%.c16
 	@echo -e "Compiling $(YELLOWFG)$@$(NORMAL)..."
 	@mkdir -p $(dir $@)
 	@$(CC) -c $(CFLAGS16) $(CINCLUDES_KERNEL) $< -o $@ -Xassembler -al=$@.lst
