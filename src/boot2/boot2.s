@@ -143,13 +143,21 @@ newline:                    .asciz "\r\n"
 
 .macro isr_err_stub i
 isr_stub_\i:
+    push %eax
     call catchall_interrupt
+    mov $0x20, %al
+    out %al, $0x20  # acknowledge the interrupt to the PIC
+    pop %eax
     iret
 .endm
 
 .macro isr_no_err_stub i
 isr_stub_\i:
+    push %eax
     call catchall_interrupt
+    mov $0x20, %al
+    out %al, $0x20  # acknowledge the interrupt to the PIC
+    pop %eax
     iret
 .endm
 
@@ -187,6 +195,10 @@ isr_no_err_stub 28
 isr_no_err_stub 29
 isr_err_stub    30
 isr_no_err_stub 31
+isr_no_err_stub 32
+isr_no_err_stub 33
+isr_no_err_stub 34
+isr_no_err_stub 35
 
 // .macro define_isr_stub_table i=0, m=31
 // .long isr_stub_\i
@@ -236,11 +248,8 @@ test_protected_mode:
 
     sti
 
-    mov $0x0, %ebx
-    mov $5, %eax
-    div %ebx
-
-    movl $0x06420f41, 0xb8000
+    addb $1, 0xb8001
+    // movl $0x06420f41, 0xb8000
     hlt
 
 halt32:

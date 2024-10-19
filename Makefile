@@ -46,11 +46,12 @@ BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 
 
 BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s \
-			$(SRC_DIR)/boot2/gdt_setup.c16 \
-			$(SRC_DIR)/boot2/idt_setup.c16 \
-			$(SRC_DIR)/boot2/gdt_struct.c16 \
-			$(SRC_DIR)/boot2/idt_struct.c16 \
-			$(SRC_DIR)/boot2/interrupts/catchall_interrupt.s
+			$(SRC_DIR)/boot2/gdt_idt/gdt_setup.c16 \
+			$(SRC_DIR)/boot2/gdt_idt/idt_setup.c16 \
+			$(SRC_DIR)/boot2/gdt_idt/gdt_struct.c16 \
+			$(SRC_DIR)/boot2/gdt_idt/idt_struct.c16 \
+			$(SRC_DIR)/boot2/interrupts/catchall_interrupt.s \
+			$(SRC_DIR)/boot2/interrupts/test_kb_interrupt.s
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			  $(patsubst %.s,%.o,\
@@ -68,7 +69,7 @@ test: build
 	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
 	@echo -e "$(YELLOWFG) Starting QEMU emulation $(NORMAL)"
 	@echo -e "$(YELLOWFG)=========================$(NORMAL)"
-	@qemu-system-i386 -fda $(BUILD_DIR)/$(IMG_FILENAME) -monitor stdio
+	@qemu-system-i386 -fda $(BUILD_DIR)/$(IMG_FILENAME) -d int -D qemu-log.txt -monitor stdio
 
 
 # Debugging setup for GDB

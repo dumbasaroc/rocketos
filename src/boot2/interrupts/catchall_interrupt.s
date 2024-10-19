@@ -3,6 +3,5 @@
 .global catchall_interrupt
 
 catchall_interrupt:
-    cli
-    movw $0x0641, 0xb8000
-    hlt
+    addb $1, 0xb8001
+    ret
