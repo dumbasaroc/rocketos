@@ -207,8 +207,8 @@ isr_no_err_stub 35
 // .endif
 // .endm
 
-.global isr_stub_table
-isr_stub_table:
+.global isr_table
+isr_table:
     .long isr_stub_0
     .long isr_stub_1
     .long isr_stub_2
@@ -241,11 +241,15 @@ isr_stub_table:
     .long isr_stub_29
     .long isr_stub_30
     .long isr_stub_31
+    .long isr_stub_32
+    .long kb_int        # interrupt 33
+    .long isr_stub_34
+    .long isr_stub_35
 
 
 
 test_protected_mode:
-
+    call setup_pic
     sti
 
     addb $1, 0xb8001

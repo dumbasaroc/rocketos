@@ -51,7 +51,8 @@ BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s \
 			$(SRC_DIR)/boot2/gdt_idt/gdt_struct.c16 \
 			$(SRC_DIR)/boot2/gdt_idt/idt_struct.c16 \
 			$(SRC_DIR)/boot2/interrupts/catchall_interrupt.s \
-			$(SRC_DIR)/boot2/interrupts/test_kb_interrupt.s
+			$(SRC_DIR)/boot2/interrupts/test_kb_interrupt.s \
+			$(SRC_DIR)/boot2/gdt_idt/pic_setup.s
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			  $(patsubst %.s,%.o,\
