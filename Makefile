@@ -46,7 +46,8 @@ BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			 $(patsubst %.s,%.o,$(BOOT_SOURCES)))
 
 
-CSTD32_SOURCES=$(SRC_DIR)/cstd/stdout/stdout.c
+CSTD32_SOURCES=$(SRC_DIR)/cstd/stdout/stdout.c \
+			   $(SRC_DIR)/cstd/hardware/ps2keyboard/kb.c
 
 CSTD32_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			   $(patsubst %.s,%.o,\

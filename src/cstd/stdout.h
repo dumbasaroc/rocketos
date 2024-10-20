@@ -18,4 +18,7 @@ extern uint8_t color;
 void putc(char c);
 void puts(const char* s);
 
+void printdbg();
+void printb(uint8_t c);
+
 void clear_screen();

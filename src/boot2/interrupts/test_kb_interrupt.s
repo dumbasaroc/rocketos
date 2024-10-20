@@ -7,7 +7,7 @@ kb_int:
     in $0x60, %al   # read information from the keyboard
 
     cmp $0x80, %al
-    jbe release
+    jae release
 
 down:
     and $0x000000ff, %eax

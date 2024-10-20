@@ -38,3 +38,44 @@ void clear_screen()
         }
     }
 }
+
+void printdbg()
+{
+    cursor_x = 0;
+    cursor_y = 0;
+    clear_screen();
+
+    for (int i = 0; i < 16; i++)
+    {
+        for (int j = 0; j < 16; j++)
+        {
+            putc(i*16 + j);
+        }
+        cursor_x = 0;
+        cursor_y++;
+    }
+}
+
+void printb(uint8_t c)
+{
+    char hexnum[5];
+    hexnum[0] = '0';
+    hexnum[1] = 'x';
+
+    uint8_t bottom_byte = c % 0x10;
+    uint8_t top_byte = c / 0x10;
+
+    if (bottom_byte < 0xa)
+        hexnum[3] = bottom_byte + 0x30;
+    else
+        hexnum[3] = bottom_byte + 0x37;
+
+    if (top_byte < 0xa)
+        hexnum[2] = top_byte + 0x30;
+    else
+        hexnum[2] = top_byte + 0x37;
+    
+    puts(hexnum);
+    cursor_x=0;
+    cursor_y++;
+}
