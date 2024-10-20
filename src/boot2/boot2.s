@@ -9,22 +9,12 @@ boot2start:
     mov %ax, %sp
     mov %ax, %bp
 
-    mov %sp, %ax
-    call print_hex
+    mov $0x0, %ah
+    mov $0x2, %al
+    int $0x10
 
     call gdt_setup
-    mov %sp, %ax
-    call print_hex
-
-    mov %sp, %ax
-    sub $2, %ax
-    mov %ax, %sp
-    call print_hex
-
     call idt_setup
-
-    mov $testprint, %si
-    call print
 
     cli
     lgdt gdt_descriptor
@@ -252,8 +242,8 @@ test_protected_mode:
     call setup_pic
     sti
 
-    addb $1, 0xb8001
-    // movl $0x06420f41, 0xb8000
+    call run_boot2_c
+
     hlt
 
 halt32:

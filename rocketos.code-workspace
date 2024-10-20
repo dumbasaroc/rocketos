@@ -21,6 +21,10 @@
 			"name": "OS Kernel"
 		},
 		{
+			"path": "src/cstd",
+			"name": "C Standard (32 Bit)"
+		},
+		{
 			"path": ".",
 			"name": "Root Directory",
 		}
@@ -29,7 +33,8 @@
 		"files.associations": {
 			"*.s16": "gas",
 			"*.c16": "c",
-			"idt_struct.h": "c"
+			"idt_struct.h": "c",
+			"stdint.h": "c"
 		},
 		"material-icon-theme.files.customClones": [
 			{

@@ -18,7 +18,8 @@ CFLAGS16=-x c -m16 -Wall -fno-builtin
 #-mpreferred-stack-boundary=0
 CFLAGS32=-m32 -Wall -fno-builtin
 CINCLUDES_KERNEL=-Isrc/kernel/cstd
-CINCLUDES_BOOT2=-Isrc/boot2
+CINCLUDES_BOOT2=-Isrc/boot2 -Isrc/cstd
+CSTD32_INCLUDES=-Isrc/cstd
 
 BUILD_DIR=build
 SRC_DIR=src
@@ -45,6 +46,13 @@ BOOT_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			 $(patsubst %.s,%.o,$(BOOT_SOURCES)))
 
 
+CSTD32_SOURCES=$(SRC_DIR)/cstd/stdout/stdout.c
+
+CSTD32_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
+			   $(patsubst %.s,%.o,\
+			   $(patsubst %.c,%.obj,$(CSTD32_SOURCES))))
+
+
 BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s \
 			$(SRC_DIR)/boot2/gdt_idt/gdt_setup.c16 \
 			$(SRC_DIR)/boot2/gdt_idt/idt_setup.c16 \
@@ -52,12 +60,15 @@ BOOT2_SOURCES=$(SRC_DIR)/boot2/boot2.s \
 			$(SRC_DIR)/boot2/gdt_idt/idt_struct.c16 \
 			$(SRC_DIR)/boot2/interrupts/catchall_interrupt.s \
 			$(SRC_DIR)/boot2/interrupts/test_kb_interrupt.s \
-			$(SRC_DIR)/boot2/gdt_idt/pic_setup.s
+			$(SRC_DIR)/boot2/interrupts/test_kb_interrupt.c \
+			$(SRC_DIR)/boot2/gdt_idt/pic_setup.s \
+			$(SRC_DIR)/boot2/boot2.c
 
 BOOT2_OBJECTS=$(patsubst src/%,$(OBJ_DIR)/%,\
 			  $(patsubst %.s,%.o,\
 			  $(patsubst %.c16,%.obj, \
-			  $(patsubst %.c,%.obj,$(BOOT2_SOURCES)))))
+			  $(patsubst %.c,%.obj,$(BOOT2_SOURCES))))) \
+			  $(CSTD32_OBJECTS)
 
 
 # Build Script
@@ -84,7 +95,9 @@ debug: build
 
 # Actual File Rules
 
-$(BUILD_DIR)/$(IMG_FILENAME): $(BUILD_DIR)/boot.bin $(BUILD_DIR)/kernel.bin $(BUILD_DIR)/boot2.bin
+# $(BUILD_DIR)/kernel.bin
+# @mcopy -i $(BUILD_DIR)/$(IMG_FILENAME) $(BUILD_DIR)/kernel.bin "::kernel.bin"
+$(BUILD_DIR)/$(IMG_FILENAME): $(BUILD_DIR)/boot.bin $(BUILD_DIR)/boot2.bin
 	@echo -e "$(YELLOWFG)======================$(NORMAL)"
 	@echo -e "$(YELLOWFG)Creating bootable disk$(NORMAL)"
 	@echo -e "$(YELLOWFG)======================$(NORMAL)"
@@ -92,7 +105,6 @@ $(BUILD_DIR)/$(IMG_FILENAME): $(BUILD_DIR)/boot.bin $(BUILD_DIR)/kernel.bin $(BU
 	@mkfs.fat -F 12 -n "TESTOS" $(BUILD_DIR)/$(IMG_FILENAME)
 	@dd if=$(BUILD_DIR)/boot.bin of=$(BUILD_DIR)/$(IMG_FILENAME) conv=notrunc
 	@mcopy -i $(BUILD_DIR)/$(IMG_FILENAME) $(BUILD_DIR)/boot2.bin "::boot2.bin"
-	@mcopy -i $(BUILD_DIR)/$(IMG_FILENAME) $(BUILD_DIR)/kernel.bin "::kernel.bin"
 	@echo -e "$(GREENFG)COMPLETED!$(NORMAL)"
 
 
@@ -118,6 +130,11 @@ $(BUILD_DIR)/boot2.bin: $(BOOT2_OBJECTS)
 #########################
 # Individual File Rules #
 #########################
+
+$(OBJ_DIR)/cstd/%.obj: $(SRC_DIR)/cstd/%.c
+	@echo -e "Compiling CSTD file $(YELLOWFG)$@$(NORMAL)..."
+	@mkdir -p $(dir $@)
+	@$(CC) -c $(CFLAGS32) $(CSTD32_INCLUDES) $< -o $@ -Xassembler -al=$@.lst
 
 $(OBJ_DIR)/boot2/%.obj: $(SRC_DIR)/boot2/%.c16
 	@echo -e "Compiling GCC16 $(YELLOWFG)$@$(NORMAL)..."
