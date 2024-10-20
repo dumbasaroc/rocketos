@@ -2,3 +2,6 @@
 build/
 obj/
 realbuild/
+
+# QEMU debug logs
+qemu-log.txt
