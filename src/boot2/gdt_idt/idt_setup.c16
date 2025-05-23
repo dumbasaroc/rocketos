@@ -41,7 +41,7 @@ void idt_setup() {
 
     for (int i = 0; i < IDT_ENTRIES; i++)
     {
-        gate.offset = isr_table[i];
+        gate.offset = (uint32_t)isr_table[i];
         gate.seg = 0x8;
         gate.type_selector = IDT_32BIT_INTERRUPT_GATE;
         encode_idt_entry(interrupt_descriptor_table + i*8, &gate);
