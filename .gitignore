@@ -2,6 +2,7 @@
 build/
 obj/
 realbuild/
+cmake-build
 
 # QEMU debug logs
 qemu-log.txt
